@@ -39,7 +39,11 @@ export default class API {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json, text/plain, */*"
       },
-      body: "grant_type=password&username=" + username + "&password=" + password
+      body:
+        "grant_type=password&username=" +
+        encodeURIComponent(username) +
+        "&password=" +
+        encodeURIComponent(password)
     });
   }
 
@@ -50,7 +54,9 @@ export default class API {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json, text/plain, */*"
       },
-      body: "grant_type=refresh_token&refresh_token=" + refreshToken
+      body:
+        "grant_type=refresh_token&refresh_token=" +
+        encodeURIComponent(refreshToken)
     });
   }
 
