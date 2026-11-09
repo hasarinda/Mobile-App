@@ -19,22 +19,15 @@ import {
   requestSession
 } from "./login";
 import API from "../API/API";
-import { ToastActionsCreators } from "react-native-redux-toast";
+import { notifyError } from "./notify";
+import { AppError, ErrorCode, isConnectionError } from "../utils/errors";
 import { isExpired } from "../utils/jwt";
 import type { Device } from "../types/Device";
 import type { ThunkAction } from "../types/Dispatch";
 import type { Attribute } from "../types/Attribute";
 
 function showError(dispatch, message: string) {
-  dispatch(ToastActionsCreators.displayError(message, 2000));
-}
-
-// Network failures (fetch TypeError) and rejected insecure URLs both mean
-// the server can't be reached.
-function isConnectionError(error) {
-  return (
-    error instanceof TypeError || (error && error.message === "INSECURE_SERVER")
-  );
+  dispatch(notifyError(message));
 }
 
 function handleResponseStatus(device, status, dispatch) {
@@ -247,7 +240,7 @@ export function postResource(
         device.jwt
       );
       handleResponseStatus(device, response.status, dispatch);
-      if (!response.ok) throw new Error("HTTP " + response.status);
+      if (!response.ok) throw new AppError(ErrorCode.HTTP, response.status);
       // Some resources reply with an empty body.
       let json = {};
       try {
@@ -279,7 +272,7 @@ export function runResource(device: Device, resource: string): ThunkAction {
         device.jwt
       );
       handleResponseStatus(device, response.status, dispatch);
-      if (!response.ok) throw new Error("HTTP " + response.status);
+      if (!response.ok) throw new AppError(ErrorCode.HTTP, response.status);
     } catch (error) {
       if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));

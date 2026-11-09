@@ -15,11 +15,12 @@ import { MARGIN } from "../../constants/ThingerStyles";
 import Screen from "../containers/Screen";
 import { navigate } from "../../actions/nav";
 import { getResourcesFromApi } from "../../actions/fetch";
-import { addDevice, selectDevice } from "../../actions/device";
+import { selectDevice } from "../../actions/device";
+import { addDeviceFromToken } from "../../actions/token";
 import { removeAllResources } from "../../actions/resource";
 import type { Dispatch } from "../../types/Dispatch";
 import NavigationBar from "../navigation/NavigationBar";
-import type { Device, DeviceMap } from "../../types/Device";
+import type { Device } from "../../types/Device";
 import { GoogleAnalyticsTracker } from "react-native-google-analytics-bridge";
 import ID from "../../constants/GoogleAnalytics";
 import H1Text from "../texts/H1";
@@ -27,20 +28,16 @@ import H2Text from "../texts/H2";
 import { DARK_BLUE } from "../../constants/ThingerColors";
 import ActionButton from "react-native-action-button";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { parseJWT } from "../../utils/jwt";
-import { ToastActionsCreators } from "react-native-redux-toast";
 
 type Props = {
   ids: Array<string>,
   devices: Array<Device>,
   onDeviceClick: (device: Device) => Dispatch,
   onQRScannerPress: () => Dispatch,
-  onAddDevice: (device: DeviceMap) => Dispatch,
+  onToken: (token: string, devices: Array<string>) => any,
   onSettingsPress: () => Dispatch,
   isUserDevices: boolean,
-  isFetching: boolean,
-  displayMessage: (message: string) => Dispatch,
-  displayError: (message: string) => Dispatch
+  isFetching: boolean
 };
 
 class DevicesScreen extends React.Component<Props> {
@@ -62,26 +59,8 @@ class DevicesScreen extends React.Component<Props> {
   };
 
   onClipboardButtonPress = async () => {
-    const {
-      ids: devices,
-      onAddDevice,
-      displayMessage,
-      displayError
-    } = this.props;
-
-    try {
-      const token = await Clipboard.getString();
-      const device = parseJWT(token);
-      const id = Object.keys(device)[0];
-      if (devices.includes(id)) {
-        displayError("This device already exists");
-      } else {
-        onAddDevice(device);
-        displayMessage("Added!");
-      }
-    } catch (e) {
-      displayError("This QR isn't a device");
-    }
+    const { ids, onToken } = this.props;
+    onToken(await Clipboard.getString(), ids);
   };
 
   renderContent() {
@@ -217,11 +196,8 @@ const mapDispatchToProps = dispatch => {
     },
     onSettingsPress: () => dispatch(navigate("Settings")),
     onQRScannerPress: () => dispatch(navigate("Scanner")),
-    onAddDevice: (device: DeviceMap) => dispatch(addDevice(device, false)),
-    displayMessage: (message: string) =>
-      dispatch(ToastActionsCreators.displayInfo(message, 1000)),
-    displayError: (message: string) =>
-      dispatch(ToastActionsCreators.displayError(message, 1000))
+    onToken: (token: string, devices: Array<string>) =>
+      dispatch(addDeviceFromToken(token, devices))
   };
 };
 

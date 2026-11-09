@@ -1,5 +1,7 @@
 //@flow
 
+import { AppError, ErrorCode } from "./errors";
+
 // Only HTTPS servers are allowed so credentials and tokens are never sent
 // in clear text. http://localhost is permitted for local development.
 export function isSecureServer(server: ?string): boolean {
@@ -13,6 +15,6 @@ export function isSecureServer(server: ?string): boolean {
 
 export function assertSecureServer(server: ?string) {
   if (!isSecureServer(server)) {
-    throw new Error("INSECURE_SERVER");
+    throw new AppError(ErrorCode.INSECURE_SERVER);
   }
 }

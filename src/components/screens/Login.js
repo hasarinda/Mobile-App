@@ -26,7 +26,7 @@ import { isSecureServer } from "../../utils/url";
 import H2Text from "../texts/H2";
 import { loginFromApi } from "../../actions/fetch";
 import type { LoginAction } from "../../actions/login";
-import { ToastActionsCreators } from "react-native-redux-toast";
+import { notifyError } from "../../actions/notify";
 
 type Props = {
   username: string,
@@ -162,20 +162,17 @@ const mapDispatchToProps = dispatch => {
     onSetServer: server => dispatch(setServer(server)),
     onLogin: async (user, password, server) => {
       if (!isSecureServer(server)) {
-        return dispatch(
-          ToastActionsCreators.displayError("Server must use https://", 2000)
-        );
+        return dispatch(notifyError("Server must use https://"));
       }
       const response: LoginAction = await dispatch(
         loginFromApi(server, user, password)
       );
       if (response && response.type === "RECEIVE_SESSION_FAILURE")
         dispatch(
-          ToastActionsCreators.displayError(
+          notifyError(
             response.reason === "network"
               ? "Couldn't connect to " + server
-              : "Wrong email or password",
-            2000
+              : "Wrong email or password"
           )
         );
     }

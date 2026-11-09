@@ -2,47 +2,53 @@
 
 import base64 from "base-64";
 import type { DeviceMap } from "../types/Device";
+import { THINGER_SERVER } from "../constants/ThingerConstants";
+import { AppError, ErrorCode } from "./errors";
 
-export function parseJWT(jwt: string): DeviceMap {
+type DeviceTokenPayload = {
+  dev: string,
+  jti: string,
+  usr: string,
+  iat?: number,
+  exp?: number,
+  res?: Array<string>
+};
+
+function decodePayload(jwt: string): DeviceTokenPayload {
   try {
-    const data: string = jwt.split(".")[1];
-    const payload = base64.decode(data);
-    const json: {
-      dev: string,
-      jti: string,
-      usr: string,
-      iat: number,
-      exp: number,
-      res: Array<string>
-    } = JSON.parse(payload);
-    // Reject QR codes that aren't Thinger.io device tokens.
-    // NOTE: the signature can't be verified on the client; the server
-    // still rejects forged tokens with 401.
-    if (!json || !json.dev || !json.usr || !json.jti) {
-      throw new Error("INVALID_DEVICE_TOKEN");
-    }
-    if (isExpired(json.exp)) {
-      throw new Error("EXPIRED_DEVICE_TOKEN");
-    }
-    return {
-      [json.jti]: {
-        dev: json.dev,
-        id: json.jti,
-        usr: json.usr,
-        iat: json.iat,
-        exp: json.exp,
-        res: json.res,
-        jwt,
-        isFetching: false,
-        isOnline: false,
-        isAuthorized: false,
-        server: "https://api.thinger.io",
-        hasServerConnection: false
-      }
-    };
-  } catch (error) {
-    throw error;
+    return JSON.parse(base64.decode(jwt.trim().split(".")[1]));
+  } catch (e) {
+    throw new AppError(ErrorCode.INVALID_DEVICE_TOKEN);
   }
+}
+
+// Parses a Thinger.io device token (from a QR code or the clipboard).
+// NOTE: the signature can't be verified on the client; the server still
+// rejects forged tokens with 401.
+export function parseJWT(jwt: string): DeviceMap {
+  const json = decodePayload(jwt);
+  if (!json || !json.dev || !json.usr || !json.jti) {
+    throw new AppError(ErrorCode.INVALID_DEVICE_TOKEN);
+  }
+  if (isExpired(json.exp)) {
+    throw new AppError(ErrorCode.EXPIRED_DEVICE_TOKEN);
+  }
+  return {
+    [json.jti]: {
+      dev: json.dev,
+      id: json.jti,
+      usr: json.usr,
+      iat: json.iat,
+      exp: json.exp,
+      res: json.res,
+      jwt,
+      isFetching: false,
+      isOnline: false,
+      isAuthorized: false,
+      server: THINGER_SERVER,
+      hasServerConnection: false
+    }
+  };
 }
 
 // `exp` is in seconds since epoch; tokens without `exp` never expire.
