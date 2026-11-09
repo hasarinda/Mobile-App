@@ -1,6 +1,7 @@
 //@flow
 
 import React from "react";
+import { buttonA11y } from "../../utils/a11y";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PADDING } from "../../constants/ThingerStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -31,6 +32,7 @@ export default class TabBar extends React.Component<Props> {
             <TouchableOpacity
               key={title}
               onPress={onPress}
+              {...buttonA11y(title, active)}
               style={styles.button}
             >
               {active

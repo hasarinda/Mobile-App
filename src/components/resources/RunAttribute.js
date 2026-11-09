@@ -1,6 +1,8 @@
 //@flow
 
 import React from "react";
+import { buttonA11y } from "../../utils/a11y";
+import { t } from "../../i18n";
 import { TouchableOpacity } from "react-native";
 import AttributeView from "./Attribute";
 import { DARK_BLUE } from "../../constants/ThingerColors";
@@ -14,7 +16,7 @@ type Props = {
 
 export default class RunAttribute extends React.Component<Props> {
   renderValue() {
-    const { onRun } = this.props;
+    const { id, onRun } = this.props;
     return (
       <TouchableOpacity
         style={{
@@ -23,6 +25,7 @@ export default class RunAttribute extends React.Component<Props> {
           marginRight: 15
         }}
         onPress={onRun}
+        {...buttonA11y(t("resource.run", { resource: id }))}
       >
         <Icon name="paper-plane" size={22} style={{ color: DARK_BLUE }} />
       </TouchableOpacity>

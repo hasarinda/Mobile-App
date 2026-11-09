@@ -120,7 +120,7 @@ class DeviceInfo extends React.Component<Props, State> {
               <CenterView style={{ margin: MARGIN }}>
                 <RoundedButton
                   color={LIGHT_RED}
-                  text="Remove"
+                  text={t("action.remove")}
                   onPress={() => removeDevice(device.id)}
                 />
               </CenterView>

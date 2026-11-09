@@ -1,6 +1,8 @@
 //@flow
 
 import React from "react";
+import { buttonA11y } from "../../utils/a11y";
+import { t } from "../../i18n";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
   FONT_SIZE_H1,
@@ -18,6 +20,7 @@ type Props = {
   main?: boolean,
   button?: {
     icon: string,
+    label?: string,
     onPress: () => any
   },
   dispatch: Dispatch
@@ -31,7 +34,10 @@ class NavigationBar extends React.Component<Props> {
       <View style={styles.container}>
         <View style={{ flex: 1, paddingLeft: 0 }}>
           {!main && (
-            <TouchableOpacity onPress={() => dispatch(goBack())}>
+            <TouchableOpacity
+              onPress={() => dispatch(goBack())}
+              {...buttonA11y(t("a11y.back"))}
+            >
               <Icon
                 name="chevron-left"
                 size={FONT_SIZE_H1}
@@ -40,10 +46,15 @@ class NavigationBar extends React.Component<Props> {
             </TouchableOpacity>
           )}
         </View>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} accessibilityTraits="header">
+          {title}
+        </Text>
         <View style={{ flex: 1, alignItems: "flex-end" }}>
           {button && (
-            <TouchableOpacity onPress={button.onPress}>
+            <TouchableOpacity
+              onPress={button.onPress}
+              {...buttonA11y(button.label || button.icon)}
+            >
               <Icon
                 name={button.icon}
                 size={FONT_SIZE_H1}

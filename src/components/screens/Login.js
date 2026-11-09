@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { buttonA11y } from "../../utils/a11y";
 import { t } from "../../i18n";
 import {
   ActivityIndicator,
@@ -70,6 +71,7 @@ class LoginScreen extends React.Component<Props> {
               borderRadius: BORDER_RADIUS
             }}
             label={t("login.username")}
+            accessibilityLabel={t("login.username")}
             iconClass={Icon}
             iconName={"person"}
             iconColor={DARK_BLUE}
@@ -88,6 +90,7 @@ class LoginScreen extends React.Component<Props> {
               borderRadius: BORDER_RADIUS
             }}
             label={t("login.password")}
+            accessibilityLabel={t("login.password")}
             iconClass={Icon}
             iconName={"lock"}
             iconColor={DARK_BLUE}
@@ -105,6 +108,7 @@ class LoginScreen extends React.Component<Props> {
               borderRadius: BORDER_RADIUS
             }}
             label={t("login.server")}
+            accessibilityLabel={t("login.server")}
             iconClass={Icon}
             iconName={"http"}
             iconColor={DARK_BLUE}
@@ -116,6 +120,7 @@ class LoginScreen extends React.Component<Props> {
             onChangeText={this.props.onSetServer}
           />
           <TouchableOpacity
+            {...buttonA11y(t("login.submit"))}
             onPress={() => {
               Keyboard.dismiss();
               this.props.onLogin(

@@ -135,6 +135,7 @@ class ResourcesScreen extends React.Component<Props, State> {
             }
             button={{
               icon: "cog",
+              label: t("title.settings"),
               onPress: onSettingsClick
             }}
           />

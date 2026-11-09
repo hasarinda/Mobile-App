@@ -1,6 +1,7 @@
 //@flow
 
 import { FONT_SIZE_P, PADDING } from "../../constants/ThingerStyles";
+import { buttonA11y } from "../../utils/a11y";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import type { Style } from "../../types/Style";
@@ -16,7 +17,7 @@ export default class RoundedButton extends React.Component<Props> {
     const { color, text, onPress } = this.props;
 
     return (
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} {...buttonA11y(text)}>
         <View style={[{ backgroundColor: color }, styles.container]}>
           <Text style={styles.text}>{text}</Text>
         </View>

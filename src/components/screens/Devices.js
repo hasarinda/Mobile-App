@@ -101,7 +101,11 @@ class DevicesScreen extends React.Component<Props> {
         )}
 
         {!isUserDevices && (
-          <ActionButton buttonColor="rgba(231,76,60,1)">
+          <ActionButton
+            buttonColor="rgba(231,76,60,1)"
+            accessible={true}
+            accessibilityLabel={t("a11y.addDevice")}
+          >
             <ActionButton.Item
               buttonColor="#9b59b6"
               title={t("devices.addFromClipboard")}
@@ -135,6 +139,7 @@ class DevicesScreen extends React.Component<Props> {
               isUserDevices
                 ? {
                     icon: "cog",
+                    label: t("title.settings"),
                     onPress: onSettingsPress
                   }
                 : undefined

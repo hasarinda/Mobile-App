@@ -1,6 +1,8 @@
 //@flow
 
 import React from "react";
+import { buttonA11y } from "../utils/a11y";
+import { t } from "../i18n";
 import { Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -46,14 +48,28 @@ export default class Label extends React.Component<Props> {
   }
 
   render() {
-    const { id, locked, onClick } = this.props;
+    const { id, value, selected, locked, onClick } = this.props;
 
     return !locked ? (
-      <TouchableOpacity onPress={() => onClick(id)}>
+      <TouchableOpacity
+        onPress={() => onClick(id)}
+        {...buttonA11y(
+          t("a11y.series", { name: id, value: String(value) }),
+          selected
+        )}
+      >
         {this.renderView()}
       </TouchableOpacity>
     ) : (
-      this.renderView()
+      <View
+        accessible={true}
+        accessibilityLabel={t("a11y.locked", {
+          name: id,
+          value: String(value)
+        })}
+      >
+        {this.renderView()}
+      </View>
     );
   }
 }
