@@ -94,7 +94,7 @@ function configureStore() {
   });
   const middleware = [thunkMiddleware, navMiddleware, screenTracking, vibrate];
   const composeEnhancers =
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    (__DEV__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
   const store = createStore(
     reducer,
     composeEnhancers(applyMiddleware(...middleware))
