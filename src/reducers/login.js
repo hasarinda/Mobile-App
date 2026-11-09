@@ -40,6 +40,7 @@ export default function devices(
       return update(state, {
         accessToken: { $set: action.accessToken },
         refreshToken: { $set: action.refreshToken },
+        password: { $set: undefined },
         isLogged: { $set: true },
         isFetching: { $set: false }
       });

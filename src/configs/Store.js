@@ -1,7 +1,11 @@
 import storage from "redux-persist/es/storage";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
-import { persistStore, persistCombineReducers } from "redux-persist";
+import {
+  persistStore,
+  persistCombineReducers,
+  createTransform
+} from "redux-persist";
 import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
 import devices from "../reducers/devices";
 import selectedDevice from "../reducers/selectedDevice";
@@ -18,10 +22,18 @@ import userDevices from "../reducers/userDevices";
 import { toastReducer as toast } from "react-native-redux-toast";
 import vibrate from "../middlewares/vibrate";
 
+// Never write the plaintext password to disk.
+const stripPassword = createTransform(
+  inbound => Object.assign({}, inbound, { password: undefined }),
+  outbound => Object.assign({}, outbound, { password: undefined }),
+  { whitelist: ["login"] }
+);
+
 const config = {
   key: "root",
   storage,
-  whitelist: ["devices", "login"]
+  whitelist: ["devices", "login"],
+  transforms: [stripPassword]
 };
 
 const navMiddleware = createReactNavigationReduxMiddleware(
