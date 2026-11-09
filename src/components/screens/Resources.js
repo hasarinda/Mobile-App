@@ -185,7 +185,7 @@ const mapDispatchToProps = dispatch => {
     },
     onPostClick: (device, id, value) =>
       dispatch(postResource(device, id, value)),
-    onRun: (device, id) => runResource(device, id),
+    onRun: (device, id) => dispatch(runResource(device, id)),
     onChartClick: resource => {
       dispatch(restartStreaming());
       dispatch(selectResource(resource));

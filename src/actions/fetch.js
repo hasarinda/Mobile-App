@@ -19,9 +19,23 @@ import {
   requestSession
 } from "./login";
 import API from "../API/API";
+import { ToastActionsCreators } from "react-native-redux-toast";
 import type { Device } from "../types/Device";
 import type { ThunkAction } from "../types/Dispatch";
 import type { Attribute } from "../types/Attribute";
+
+function showError(dispatch, message: string) {
+  dispatch(ToastActionsCreators.displayError(message, 2000));
+}
+
+// Network failures (fetch TypeError) and rejected insecure URLs both mean
+// the server can't be reached.
+function isConnectionError(error) {
+  return (
+    error instanceof TypeError ||
+    (error && error.message === "INSECURE_SERVER")
+  );
+}
 
 function handleResponseStatus(device, status, dispatch) {
   switch (status) {
@@ -52,10 +66,10 @@ export function loginFromApi(
         const json = await response.json();
         return dispatch(receiveSession(json.access_token, json.refresh_token));
       } else {
-        return dispatch(receiveSessionFailure());
+        return dispatch(receiveSessionFailure("credentials"));
       }
     } catch (error) {
-      console.error(error);
+      return dispatch(receiveSessionFailure("network"));
     }
   };
 }
@@ -149,7 +163,7 @@ export function getDevicesFromApi(
           break;
       }
     } catch (error) {
-      // Network error: fall through so the loading state is cleared.
+      showError(dispatch, "Couldn't load your devices. Check your connection.");
     }
     return dispatch(receiveDevices());
   };
@@ -174,7 +188,7 @@ export function getResourceFromApi(
       const json = await response.json();
       return dispatch(receiveResource(resource, json));
     } catch (error) {
-      if (error instanceof TypeError)
+      if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
     }
   };
@@ -206,7 +220,7 @@ export function getResourcesFromApi(device: Device): ThunkAction {
       return dispatch(receiveDevice(device.id));
     } catch (error) {
       dispatch(receiveDevice(device.id));
-      if (error instanceof TypeError)
+      if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
     }
   };
@@ -219,21 +233,51 @@ export function postResource(
 ): ThunkAction {
   return async dispatch => {
     dispatch(requestResource(resource));
-    const response = await API.post(
-      device.server,
-      device.usr,
-      device.dev,
-      resource,
-      value,
-      device.jwt
-    );
-    const json = await response.json();
-    return dispatch(
-      receiveResource(resource, Object.assign({}, { in: value }, json))
-    );
+    try {
+      const response = await API.post(
+        device.server,
+        device.usr,
+        device.dev,
+        resource,
+        value,
+        device.jwt
+      );
+      handleResponseStatus(device, response.status, dispatch);
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      // Some resources reply with an empty body.
+      let json = {};
+      try {
+        json = await response.json();
+      } catch (e) {}
+      return dispatch(
+        receiveResource(resource, Object.assign({}, { in: value }, json))
+      );
+    } catch (error) {
+      if (isConnectionError(error))
+        dispatch(setDeviceServerStatus(device.id, false));
+      showError(dispatch, "Couldn't send value to " + resource);
+      // Re-fetch so the UI shows the device's real state again.
+      return dispatch(getResourceFromApi(device, resource));
+    }
   };
 }
 
 export function runResource(device: Device, resource: string): ThunkAction {
-  return API.run(device.server, device.usr, device.dev, resource, device.jwt);
+  return async dispatch => {
+    try {
+      const response = await API.run(
+        device.server,
+        device.usr,
+        device.dev,
+        resource,
+        device.jwt
+      );
+      handleResponseStatus(device, response.status, dispatch);
+      if (!response.ok) throw new Error("HTTP " + response.status);
+    } catch (error) {
+      if (isConnectionError(error))
+        dispatch(setDeviceServerStatus(device.id, false));
+      showError(dispatch, "Couldn't run " + resource);
+    }
+  };
 }

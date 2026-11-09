@@ -169,9 +169,14 @@ const mapDispatchToProps = dispatch => {
       const response: LoginAction = await dispatch(
         loginFromApi(server, user, password)
       );
-      if (response.type === "RECEIVE_SESSION_FAILURE")
+      if (response && response.type === "RECEIVE_SESSION_FAILURE")
         dispatch(
-          ToastActionsCreators.displayError("Wrong email or password", 1000)
+          ToastActionsCreators.displayError(
+            response.reason === "network"
+              ? "Couldn't connect to " + server
+              : "Wrong email or password",
+            2000
+          )
         );
     }
   };
