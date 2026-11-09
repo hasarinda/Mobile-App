@@ -1,5 +1,7 @@
 //@flow
 
+import { t } from "../i18n";
+
 // Error codes thrown inside the app. Throw `new AppError(code)` and let the
 // UI layer turn the code into a message, so every failure is reported the
 // same way.
@@ -42,10 +44,10 @@ export function isConnectionError(error: mixed): boolean {
 export function deviceTokenErrorMessage(error: mixed): string {
   switch (errorCode(error)) {
     case ErrorCode.DEVICE_EXISTS:
-      return "This device already exists";
+      return t("token.exists");
     case ErrorCode.EXPIRED_DEVICE_TOKEN:
-      return "This device token has expired";
+      return t("token.expired");
     default:
-      return "This isn't a valid device token";
+      return t("token.invalid");
   }
 }

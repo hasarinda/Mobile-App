@@ -1,6 +1,7 @@
 //@flow
 
 import { addDevice } from "./device";
+import { t } from "../i18n";
 import { notifyError, notifyInfo } from "./notify";
 import { parseJWT } from "../utils/jwt";
 import { AppError, ErrorCode, deviceTokenErrorMessage } from "../utils/errors";
@@ -20,7 +21,7 @@ export function addDeviceFromToken(
         throw new AppError(ErrorCode.DEVICE_EXISTS);
       }
       dispatch(addDevice(device, false));
-      dispatch(notifyInfo("Added!"));
+      dispatch(notifyInfo(t("devices.added")));
       return true;
     } catch (error) {
       dispatch(notifyError(deviceTokenErrorMessage(error)));

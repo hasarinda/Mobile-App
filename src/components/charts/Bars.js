@@ -1,6 +1,7 @@
 //@flow
 
 import React from "react";
+import { t } from "../../i18n";
 import { getColorByIndex } from "../../utils/colors";
 import { VictoryAxis, VictoryBar, VictoryChart } from "victory-native";
 import { PADDING } from "../../constants/ThingerStyles";
@@ -37,7 +38,7 @@ export default class extends React.PureComponent<Props> {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          <Text style={{ color: "white" }}>Select two or more resources!</Text>
+          <Text style={{ color: "white" }}>{t("chart.selectTwo")}</Text>
         </View>
       );
 

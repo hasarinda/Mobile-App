@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { t } from "../../i18n";
 import {
   ActivityIndicator,
   Image,
@@ -68,7 +69,7 @@ class LoginScreen extends React.Component<Props> {
               marginHorizontal: MARGIN * 1.5,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Username"}
+            label={t("login.username")}
             iconClass={Icon}
             iconName={"person"}
             iconColor={DARK_BLUE}
@@ -86,7 +87,7 @@ class LoginScreen extends React.Component<Props> {
               marginVertical: 4,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Password"}
+            label={t("login.password")}
             iconClass={Icon}
             iconName={"lock"}
             iconColor={DARK_BLUE}
@@ -103,7 +104,7 @@ class LoginScreen extends React.Component<Props> {
               marginHorizontal: MARGIN * 1.5,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Server"}
+            label={t("login.server")}
             iconClass={Icon}
             iconName={"http"}
             iconColor={DARK_BLUE}
@@ -136,7 +137,7 @@ class LoginScreen extends React.Component<Props> {
             {this.props.isFetching ? (
               <ActivityIndicator size="small" color="#000000" />
             ) : (
-              <H2Text>Login</H2Text>
+              <H2Text>{t("login.submit")}</H2Text>
             )}
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -162,7 +163,7 @@ const mapDispatchToProps = dispatch => {
     onSetServer: server => dispatch(setServer(server)),
     onLogin: async (user, password, server) => {
       if (!isSecureServer(server)) {
-        return dispatch(notifyError("Server must use https://"));
+        return dispatch(notifyError(t("login.insecureServer")));
       }
       const response: LoginAction = await dispatch(
         loginFromApi(server, user, password)
@@ -171,8 +172,8 @@ const mapDispatchToProps = dispatch => {
         dispatch(
           notifyError(
             response.reason === "network"
-              ? "Couldn't connect to " + server
-              : "Wrong email or password"
+              ? t("error.cannotConnect", { server })
+              : t("login.wrongCredentials")
           )
         );
     }

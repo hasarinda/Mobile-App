@@ -54,6 +54,9 @@
       "/node_modules/",
       "/android/",
       "/ios/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^react-native$": "<rootDir>/jest/react-native.js"
+    }
   }
 }

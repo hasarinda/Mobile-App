@@ -1,6 +1,7 @@
 //@flow
 
 import React from "react";
+import { t } from "../../i18n";
 import { Text, View } from "react-native";
 import { connect } from "react-redux";
 import { PADDING } from "../../constants/ThingerStyles";
@@ -41,10 +42,8 @@ class QRScanner extends React.Component<Props, State> {
           backgroundColor: "transparent"
         }}
         type={RNCamera.Constants.Type.back}
-        permissionDialogTitle={"Permission to use camera"}
-        permissionDialogMessage={
-          "We need your permission to use your camera phone"
-        }
+        permissionDialogTitle={t("qr.permissionTitle")}
+        permissionDialogMessage={t("qr.permissionMessage")}
         barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
         onBarCodeRead={data => {
           if (!this.state.scanning) this.handleOnBarCodeRead(data);
@@ -55,7 +54,7 @@ class QRScanner extends React.Component<Props, State> {
 
   render() {
     return (
-      <Screen navigationBar={<NavigationBar title="QR Scanner" />}>
+      <Screen navigationBar={<NavigationBar title={t("title.qrScanner")} />}>
         {this.renderCamera()}
         <View
           style={{
@@ -65,7 +64,7 @@ class QRScanner extends React.Component<Props, State> {
             backgroundColor: DARK_BLUE
           }}
         >
-          <Text style={{ color: "white" }}>Scan your device token QR</Text>
+          <Text style={{ color: "white" }}>{t("qr.hint")}</Text>
         </View>
       </Screen>
     );

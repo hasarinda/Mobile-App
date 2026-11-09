@@ -1,6 +1,7 @@
 //@flow
 
 import * as React from "react";
+import { t } from "../../i18n";
 import Card from "../cards/Card";
 import Button from "../cards/Button";
 import {
@@ -24,7 +25,7 @@ class ResourceComponent extends React.Component<Props> {
     if (onUpdateClick !== undefined) {
       buttons.push(
         <Button
-          text={"Update"}
+          text={t("resource.update")}
           color={LIGHT_BLUE}
           isLoading={isFetching}
           onClick={onUpdateClick}
@@ -33,14 +34,18 @@ class ResourceComponent extends React.Component<Props> {
     }
     if (onChartClick !== undefined) {
       buttons.push(
-        <Button text={"Charts"} color={LIGHT_PINK} onClick={onChartClick} />
+        <Button
+          text={t("resource.charts")}
+          color={LIGHT_PINK}
+          onClick={onChartClick}
+        />
       );
     }
     if (onPostClick !== undefined)
       buttons.push(
         <Button
           color={LIGHT_GREEN}
-          text={"Post"}
+          text={t("resource.post")}
           isLoading={isFetching}
           onClick={onPostClick}
         />

@@ -1,6 +1,7 @@
 //@flow
 
 import { isExpired } from "../../utils/jwt";
+import { t } from "../../i18n";
 import { connect } from "react-redux";
 import { ActivityIndicator, View } from "react-native";
 import React from "react";
@@ -125,7 +126,13 @@ class ResourcesScreen extends React.Component<Props, State> {
       <Screen
         navigationBar={
           <NavigationBar
-            title={device ? (device.name ? device.name : device.dev) : "Device"}
+            title={
+              device
+                ? device.name
+                  ? device.name
+                  : device.dev
+                : t("title.device")
+            }
             button={{
               icon: "cog",
               onPress: onSettingsClick
@@ -146,29 +153,25 @@ class ResourcesScreen extends React.Component<Props, State> {
             </View>
           ) : isExpired(device.exp) ? (
             <ErrorMessage
-              message={
-                "The token for " +
-                device.dev +
-                " has expired.\nScan a new QR code."
-              }
+              message={t("device.expired", { device: device.dev })}
               icon="lock"
               onPressButton={this.onRefresh}
             />
           ) : !device.isOnline ? (
             <ErrorMessage
-              message={device.dev + " is offline"}
+              message={t("device.offline", { device: device.dev })}
               icon="plug"
               onPressButton={this.onRefresh}
             />
           ) : !device.hasServerConnection ? (
             <ErrorMessage
-              message={"Couldn't connect to\n" + device.server}
+              message={t("device.serverUnreachable", { server: device.server })}
               icon="plug"
               onPressButton={this.onRefresh}
             />
           ) : !device.isAuthorized ? (
             <ErrorMessage
-              message={device.usr + " isn't authorized"}
+              message={t("device.unauthorized", { user: device.usr })}
               icon="lock"
               onPressButton={this.onRefresh}
             />

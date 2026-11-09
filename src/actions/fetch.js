@@ -9,6 +9,7 @@ import {
   setDeviceServerStatus,
   setDeviceState
 } from "./device";
+import { t } from "../i18n";
 import { receiveResource, requestResource } from "./resource";
 import {
   logOut,
@@ -156,7 +157,7 @@ export function getDevicesFromApi(
           break;
       }
     } catch (error) {
-      showError(dispatch, "Couldn't load your devices. Check your connection.");
+      showError(dispatch, t("device.loadFailed"));
     }
     return dispatch(receiveDevices());
   };
@@ -254,7 +255,7 @@ export function postResource(
     } catch (error) {
       if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
-      showError(dispatch, "Couldn't send value to " + resource);
+      showError(dispatch, t("resource.postFailed", { resource }));
       // Re-fetch so the UI shows the device's real state again.
       return dispatch(getResourceFromApi(device, resource));
     }
@@ -276,7 +277,7 @@ export function runResource(device: Device, resource: string): ThunkAction {
     } catch (error) {
       if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
-      showError(dispatch, "Couldn't run " + resource);
+      showError(dispatch, t("resource.runFailed", { resource }));
     }
   };
 }

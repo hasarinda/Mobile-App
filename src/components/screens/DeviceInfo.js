@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { t } from "../../i18n";
 import React from "react";
 import { MARGIN } from "../../constants/ThingerStyles";
 import RoundedButton from "../buttons/RoundedButton";
@@ -61,49 +62,55 @@ class DeviceInfo extends React.Component<Props, State> {
       changeName
     } = this.props;
     return (
-      <Screen navigationBar={<NavigationBar title="Settings" />}>
+      <Screen navigationBar={<NavigationBar title={t("title.settings")} />}>
         {device && (
           <ScrollView>
             <List>
-              <OutputItem name={"Device"} value={device.dev} />
-              <OutputItem name={"User"} value={device.usr} />
+              <OutputItem name={t("info.device")} value={device.dev} />
+              <OutputItem name={t("info.user")} value={device.usr} />
               {isUserDevice ? (
                 <OutputItem
-                  name={"Description"}
+                  name={t("info.description")}
                   value={device.desc ? device.desc : ""}
                 />
               ) : (
                 [
                   <TextInputItem
                     key="alias"
-                    name={"Alias"}
+                    name={t("info.alias")}
                     value={device.name ? device.name : ""}
                     placeholder={device.dev}
                     onChangeText={text => changeName(device.id, text)}
                   />,
                   <TextInputItem
                     key="server"
-                    name={"Server"}
+                    name={t("info.server")}
                     value={this.state.server}
                     placeholder={THINGER_SERVER}
                     onChangeText={this.handleOnChangeText}
                   />,
                   <EnterItem
                     key="qr"
-                    name={"Token QR"}
+                    name={t("info.tokenQR")}
                     onPress={() => onShowQR()}
                   />,
                   <OutputItem
                     key="iat"
-                    name={"Token creation date"}
+                    name={t("info.tokenCreated")}
                     value={
-                      device.iat ? timestampToString(device.iat) : "Unknown"
+                      device.iat
+                        ? timestampToString(device.iat)
+                        : t("info.unknown")
                     }
                   />,
                   <OutputItem
                     key="exp"
-                    name={"Token expiration date"}
-                    value={device.exp ? timestampToString(device.exp) : "Never"}
+                    name={t("info.tokenExpires")}
+                    value={
+                      device.exp
+                        ? timestampToString(device.exp)
+                        : t("info.never")
+                    }
                   />
                 ]
               )}

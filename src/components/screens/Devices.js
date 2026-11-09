@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { t } from "../../i18n";
 import {
   FlatList,
   View,
@@ -94,8 +95,8 @@ class DevicesScreen extends React.Component<Props> {
               source={require("../../assets/no_devices.png")}
               style={{ height: 100, width: 100, margin: MARGIN * 2 }}
             />
-            <H1Text>Ooops!</H1Text>
-            <H2Text>You could add a device...</H2Text>
+            <H1Text>{t("devices.emptyTitle")}</H1Text>
+            <H2Text>{t("devices.emptySubtitle")}</H2Text>
           </View>
         )}
 
@@ -103,14 +104,14 @@ class DevicesScreen extends React.Component<Props> {
           <ActionButton buttonColor="rgba(231,76,60,1)">
             <ActionButton.Item
               buttonColor="#9b59b6"
-              title="from clipboard"
+              title={t("devices.addFromClipboard")}
               onPress={this.onClipboardButtonPress}
             >
               <Icon name="content-paste" style={styles.actionButtonIcon} />
             </ActionButton.Item>
             <ActionButton.Item
               buttonColor="#1abc9c"
-              title="from QR scanner"
+              title={t("devices.addFromQR")}
               onPress={onQRScannerPress}
             >
               <Icon name="photo-camera" style={styles.actionButtonIcon} />
