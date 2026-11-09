@@ -45,7 +45,11 @@ class QRScanner extends React.Component<Props, State> {
       }
       setTimeout(() => this.setState({ scanning: false }), 1000);
     } catch (e) {
-      displayError("This QR isn't a device");
+      displayError(
+        e && e.message === "EXPIRED_DEVICE_TOKEN"
+          ? "This device token has expired"
+          : "This QR isn't a device"
+      );
       setTimeout(() => this.setState({ scanning: false }), 1000);
     }
   }

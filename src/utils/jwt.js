@@ -12,6 +12,15 @@ export function parseJWT(jwt: string) {
       exp: number,
       res: Array<string>
     } = JSON.parse(payload);
+    // Reject QR codes that aren't Thinger.io device tokens.
+    // NOTE: the signature can't be verified on the client; the server
+    // still rejects forged tokens with 401.
+    if (!json || !json.dev || !json.usr || !json.jti) {
+      throw new Error("INVALID_DEVICE_TOKEN");
+    }
+    if (isExpired(json.exp)) {
+      throw new Error("EXPIRED_DEVICE_TOKEN");
+    }
     return {
       [json.jti]: {
         dev: json.dev,
@@ -31,4 +40,9 @@ export function parseJWT(jwt: string) {
   } catch (error) {
     throw error;
   }
+}
+
+// `exp` is in seconds since epoch; tokens without `exp` never expire.
+export function isExpired(exp: ?number, now: number = Date.now()): boolean {
+  return typeof exp === "number" && exp * 1000 <= now;
 }

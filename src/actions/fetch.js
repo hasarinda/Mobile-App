@@ -20,6 +20,7 @@ import {
 } from "./login";
 import API from "../API/API";
 import { ToastActionsCreators } from "react-native-redux-toast";
+import { isExpired } from "../utils/jwt";
 import type { Device } from "../types/Device";
 import type { ThunkAction } from "../types/Dispatch";
 import type { Attribute } from "../types/Attribute";
@@ -196,6 +197,10 @@ export function getResourceFromApi(
 
 export function getResourcesFromApi(device: Device): ThunkAction {
   return async dispatch => {
+    if (isExpired(device.exp)) {
+      // Don't send a request that is guaranteed to fail with 401.
+      return dispatch(deauthorizeDevice(device.id));
+    }
     try {
       dispatch(requestDevice(device.id));
       let resources;

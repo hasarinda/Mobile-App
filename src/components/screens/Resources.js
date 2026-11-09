@@ -1,5 +1,6 @@
 //@flow
 
+import { isExpired } from "../../utils/jwt";
 import { connect } from "react-redux";
 import { ActivityIndicator, View } from "react-native";
 import React from "react";
@@ -143,6 +144,16 @@ class ResourcesScreen extends React.Component<Props, State> {
             >
               <ActivityIndicator size="large" color={DARK_BLUE} />
             </View>
+          ) : isExpired(device.exp) ? (
+            <ErrorMessage
+              message={
+                "The token for " +
+                device.dev +
+                " has expired.\nScan a new QR code."
+              }
+              icon="lock"
+              onPressButton={this.onRefresh}
+            />
           ) : !device.isOnline ? (
             <ErrorMessage
               message={device.dev + " is offline"}
