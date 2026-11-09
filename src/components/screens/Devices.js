@@ -130,13 +130,6 @@ class DevicesScreen extends React.Component<Props> {
               <Icon name="content-paste" style={styles.actionButtonIcon} />
             </ActionButton.Item>
             <ActionButton.Item
-              buttonColor="#3498db"
-              title="from picture"
-              onPress={() => console.error("TODO: No implemented yet")}
-            >
-              <Icon name="photo" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-            <ActionButton.Item
               buttonColor="#1abc9c"
               title="from QR scanner"
               onPress={onQRScannerPress}
