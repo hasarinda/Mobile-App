@@ -1,5 +1,7 @@
 //@flow
 
+import { assertSecureServer } from "../utils/url";
+
 function generateGETHeader(jwt: string) {
   return {
     method: "GET",
@@ -33,28 +35,37 @@ type postValue =
 
 export default class API {
   static login(server: string, username: string, password: string) {
+    assertSecureServer(server);
     return fetch(`${server}/oauth/token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json, text/plain, */*"
       },
-      body: "grant_type=password&username=" + username + "&password=" + password
+      body:
+        "grant_type=password&username=" +
+        encodeURIComponent(username) +
+        "&password=" +
+        encodeURIComponent(password)
     });
   }
 
   static refreshToken(server: string, refreshToken: string) {
+    assertSecureServer(server);
     return fetch(`${server}/oauth/token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json, text/plain, */*"
       },
-      body: "grant_type=refresh_token&refresh_token=" + refreshToken
+      body:
+        "grant_type=refresh_token&refresh_token=" +
+        encodeURIComponent(refreshToken)
     });
   }
 
   static getUserDeviceList(server: string, user: string, jwt: string) {
+    assertSecureServer(server);
     return fetch(`${server}/v1/users/${user}/devices`, generateGETHeader(jwt));
   }
 
@@ -64,6 +75,7 @@ export default class API {
     device: string,
     jwt: string
   ) {
+    assertSecureServer(server);
     return fetch(
       `${server}/v2/users/${user}/devices/${device}/api`,
       generateGETHeader(jwt)
@@ -77,6 +89,7 @@ export default class API {
     resource: string,
     jwt: string
   ) {
+    assertSecureServer(server);
     return fetch(
       `${server}/v2/users/${user}/devices/${device}/${resource}/api`,
       generateGETHeader(jwt)
@@ -91,6 +104,7 @@ export default class API {
     value: postValue,
     jwt: string
   ) {
+    assertSecureServer(server);
     return fetch(
       `${server}/v2/users/${user}/devices/${device}/${resource}`,
       generatePOSTHeader(jwt, { in: value })
@@ -104,6 +118,7 @@ export default class API {
     resource: string,
     jwt: string
   ) {
+    assertSecureServer(server);
     return fetch(
       `${server}/v2/users/${user}/devices/${device}/${resource}`,
       generateGETHeader(jwt)

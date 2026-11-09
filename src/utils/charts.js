@@ -1,3 +1,5 @@
+//@flow
+
 export function calculateDomain(
   data: Array<number>
 ): { min: number, max: number } {

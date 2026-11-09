@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { t } from "../../i18n";
 import React from "react";
 import { MARGIN } from "../../constants/ThingerStyles";
 import RoundedButton from "../buttons/RoundedButton";
@@ -25,16 +26,16 @@ class UserSettings extends React.Component<Props> {
   render() {
     const { login, onLogOut } = this.props;
     return (
-      <Screen navigationBar={<NavigationBar title="Settings" />}>
+      <Screen navigationBar={<NavigationBar title={t("title.settings")} />}>
         {login && (
           <ScrollView>
             <List>
               <OutputItem
-                name={"User"}
+                name={t("settings.user")}
                 value={login.user != null ? login.user : ""}
               />
               <OutputItem
-                name={"Server"}
+                name={t("settings.server")}
                 value={login.server != null ? login.server : ""}
               />
             </List>
@@ -42,7 +43,7 @@ class UserSettings extends React.Component<Props> {
             <CenterView style={{ margin: MARGIN }}>
               <RoundedButton
                 color={LIGHT_RED}
-                text="Log out"
+                text={t("settings.logout")}
                 onPress={() => onLogOut()}
               />
             </CenterView>

@@ -1,6 +1,7 @@
 //@flow
 
 import React from "react";
+import { t } from "../../i18n";
 import { View, ActivityIndicator, Text } from "react-native";
 import { getColorByIndex } from "../../utils/colors";
 import type { StreamingState } from "../../types/State";
@@ -43,7 +44,7 @@ export default class extends React.Component<Props> {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          <Text style={{ color: "white" }}>Select at least one resource!</Text>
+          <Text style={{ color: "white" }}>{t("chart.selectOne")}</Text>
         </View>
       );
 

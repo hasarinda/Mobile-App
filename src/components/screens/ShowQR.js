@@ -1,14 +1,12 @@
 //@flow
 
 import { View, Share } from "react-native";
+import { t } from "../../i18n";
 import React from "react";
 import { connect } from "react-redux";
 import Screen from "../containers/Screen";
 import NavigationBar from "../navigation/NavigationBar";
-import {
-  COLOR_BACKGROUND,
-  DARK_BLUE
-} from "../../constants/ThingerColors";
+import { COLOR_BACKGROUND, DARK_BLUE } from "../../constants/ThingerColors";
 import QRCode from "react-native-qrcode-svg";
 import RoundedButton from "../buttons/RoundedButton";
 import { MARGIN, PADDING } from "../../constants/ThingerStyles";
@@ -36,7 +34,7 @@ class ShowQRScreen extends React.Component<Props> {
             <RoundedButton
               style={{ marginVertical: MARGIN }}
               color={DARK_BLUE}
-              text={"Share"}
+              text={t("action.share")}
               onPress={() =>
                 Share.share({ title: this.props.name, message: this.props.jwt })
               }

@@ -16,3 +16,6 @@ export type Device = {
   server: string,
   hasServerConnection: boolean
 };
+
+// Devices keyed by id, as stored in the `devices` reducer.
+export type DeviceMap = { [id: string]: Device };

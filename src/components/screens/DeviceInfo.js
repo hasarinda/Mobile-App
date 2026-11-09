@@ -1,6 +1,7 @@
 //@flow
 
 import { connect } from "react-redux";
+import { t } from "../../i18n";
 import React from "react";
 import { MARGIN } from "../../constants/ThingerStyles";
 import RoundedButton from "../buttons/RoundedButton";
@@ -61,39 +62,55 @@ class DeviceInfo extends React.Component<Props, State> {
       changeName
     } = this.props;
     return (
-      <Screen navigationBar={<NavigationBar title="Settings" />}>
+      <Screen navigationBar={<NavigationBar title={t("title.settings")} />}>
         {device && (
           <ScrollView>
             <List>
-              <OutputItem name={"Device"} value={device.dev} />
-              <OutputItem name={"User"} value={device.usr} />
+              <OutputItem name={t("info.device")} value={device.dev} />
+              <OutputItem name={t("info.user")} value={device.usr} />
               {isUserDevice ? (
                 <OutputItem
-                  name={"Description"}
+                  name={t("info.description")}
                   value={device.desc ? device.desc : ""}
                 />
               ) : (
                 [
                   <TextInputItem
-                    name={"Alias"}
+                    key="alias"
+                    name={t("info.alias")}
                     value={device.name ? device.name : ""}
                     placeholder={device.dev}
                     onChangeText={text => changeName(device.id, text)}
                   />,
                   <TextInputItem
-                    name={"Server"}
+                    key="server"
+                    name={t("info.server")}
                     value={this.state.server}
                     placeholder={THINGER_SERVER}
                     onChangeText={this.handleOnChangeText}
                   />,
-                  <EnterItem name={"Token QR"} onPress={() => onShowQR()} />,
-                  <OutputItem
-                    name={"Token creation date"}
-                    value={timestampToString(device.iat)}
+                  <EnterItem
+                    key="qr"
+                    name={t("info.tokenQR")}
+                    onPress={() => onShowQR()}
                   />,
                   <OutputItem
-                    name={"Token expiration date"}
-                    value={device.exp ? timestampToString(device.exp) : "Never"}
+                    key="iat"
+                    name={t("info.tokenCreated")}
+                    value={
+                      device.iat
+                        ? timestampToString(device.iat)
+                        : t("info.unknown")
+                    }
+                  />,
+                  <OutputItem
+                    key="exp"
+                    name={t("info.tokenExpires")}
+                    value={
+                      device.exp
+                        ? timestampToString(device.exp)
+                        : t("info.never")
+                    }
                   />
                 ]
               )}
@@ -103,7 +120,7 @@ class DeviceInfo extends React.Component<Props, State> {
               <CenterView style={{ margin: MARGIN }}>
                 <RoundedButton
                   color={LIGHT_RED}
-                  text="Remove"
+                  text={t("action.remove")}
                   onPress={() => removeDevice(device.id)}
                 />
               </CenterView>

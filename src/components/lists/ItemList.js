@@ -5,6 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FONT_SIZE_P, PADDING } from "../../constants/ThingerStyles";
 import { DARK_BLUE, DIVIDER_COLOR } from "../../constants/ThingerColors";
 import PText from "../texts/P";
+import { buttonA11y } from "../../utils/a11y";
 
 type Props = {
   name: string,
@@ -26,12 +27,12 @@ export default class ItemList extends React.Component<Props> {
   }
 
   render() {
-    const { onPress } = this.props;
+    const { name, onPress } = this.props;
 
     return (
       <View style={styles.border}>
         {onPress ? (
-          <TouchableOpacity onPress={onPress}>
+          <TouchableOpacity onPress={onPress} {...buttonA11y(name)}>
             {this.renderContent()}
           </TouchableOpacity>
         ) : (

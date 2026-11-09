@@ -9,6 +9,7 @@ import {
   setDeviceServerStatus,
   setDeviceState
 } from "./device";
+import { t } from "../i18n";
 import { receiveResource, requestResource } from "./resource";
 import {
   logOut,
@@ -19,9 +20,16 @@ import {
   requestSession
 } from "./login";
 import API from "../API/API";
+import { notifyError } from "./notify";
+import { AppError, ErrorCode, isConnectionError } from "../utils/errors";
+import { isExpired } from "../utils/jwt";
 import type { Device } from "../types/Device";
 import type { ThunkAction } from "../types/Dispatch";
 import type { Attribute } from "../types/Attribute";
+
+function showError(dispatch, message: string) {
+  dispatch(notifyError(message));
+}
 
 function handleResponseStatus(device, status, dispatch) {
   switch (status) {
@@ -52,10 +60,10 @@ export function loginFromApi(
         const json = await response.json();
         return dispatch(receiveSession(json.access_token, json.refresh_token));
       } else {
-        return dispatch(receiveSessionFailure());
+        return dispatch(receiveSessionFailure("credentials"));
       }
     } catch (error) {
-      console.error(error);
+      return dispatch(receiveSessionFailure("network"));
     }
   };
 }
@@ -64,6 +72,7 @@ export function refreshTokenFromApi(
   server: string,
   refreshToken: string
 ): ThunkAction {
+  // Resolves to the new tokens, or null if the session could not be refreshed.
   return async dispatch => {
     try {
       dispatch(requestSession());
@@ -71,12 +80,16 @@ export function refreshTokenFromApi(
       if (response.status === 200) {
         const json = await response.json();
         dispatch(receiveSession(json.access_token, json.refresh_token));
-      } else {
-        dispatch(logOut());
+        return {
+          accessToken: json.access_token,
+          refreshToken: json.refresh_token
+        };
       }
+      dispatch(logOut());
     } catch (error) {
-      console.error(error);
+      dispatch(receiveSessionFailure());
     }
+    return null;
   };
 }
 
@@ -84,50 +97,69 @@ export function getDevicesFromApi(
   server: string,
   username: string,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  isRetry: boolean = false
 ): ThunkAction {
   return async dispatch => {
     dispatch(requestDevices());
-    const response = await API.getUserDeviceList(server, username, accessToken);
-    switch (response.status) {
-      case 200:
-        const devices = await response.json();
-        const promises = devices.map(device =>
-          dispatch(
-            addDevice(
-              {
-                [device.device]: {
-                  jwt: accessToken,
-                  id: device.device,
-                  dev: device.device,
-                  usr: username,
-                  desc: device.description,
-                  isFetching: false,
-                  isOnline: device.connection === "active",
-                  isAuthorized: true,
-                  server,
-                  hasServerConnection: true
-                }
-              },
-              true
+    try {
+      const response = await API.getUserDeviceList(
+        server,
+        username,
+        accessToken
+      );
+      switch (response.status) {
+        case 200:
+          const devices = await response.json();
+          const promises = devices.map(device =>
+            dispatch(
+              addDevice(
+                {
+                  [device.device]: {
+                    jwt: accessToken,
+                    id: device.device,
+                    dev: device.device,
+                    usr: username,
+                    desc: device.description,
+                    isFetching: false,
+                    isOnline: device.connection === "active",
+                    isAuthorized: true,
+                    server,
+                    hasServerConnection: true
+                  }
+                },
+                true
+              )
             )
-          )
-        );
-        await Promise.all(promises);
-        return dispatch(receiveDevices());
-      case 401:
-        const refresh = await dispatch(
-          refreshTokenFromApi(server, refreshToken)
-        );
-        return dispatch(
-          getDevicesFromApi(
-            server,
-            username,
-            refresh.accessToken,
-            refresh.refreshToken
-          )
-        );
+          );
+          await Promise.all(promises);
+          break;
+        case 401:
+          // Refresh once; if that fails the user has already been logged out.
+          if (!isRetry) {
+            const tokens = await dispatch(
+              refreshTokenFromApi(server, refreshToken)
+            );
+            if (tokens) {
+              return dispatch(
+                getDevicesFromApi(
+                  server,
+                  username,
+                  tokens.accessToken,
+                  tokens.refreshToken,
+                  true
+                )
+              );
+            }
+          } else {
+            dispatch(logOut());
+          }
+          break;
+      }
+    } catch (error) {
+      showError(dispatch, t("device.loadFailed"));
     }
+    return dispatch(receiveDevices());
   };
 }
 
@@ -150,7 +182,7 @@ export function getResourceFromApi(
       const json = await response.json();
       return dispatch(receiveResource(resource, json));
     } catch (error) {
-      if (error instanceof TypeError)
+      if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
     }
   };
@@ -158,6 +190,10 @@ export function getResourceFromApi(
 
 export function getResourcesFromApi(device: Device): ThunkAction {
   return async dispatch => {
+    if (isExpired(device.exp)) {
+      // Don't send a request that is guaranteed to fail with 401.
+      return dispatch(deauthorizeDevice(device.id));
+    }
     try {
       dispatch(requestDevice(device.id));
       let resources;
@@ -182,7 +218,7 @@ export function getResourcesFromApi(device: Device): ThunkAction {
       return dispatch(receiveDevice(device.id));
     } catch (error) {
       dispatch(receiveDevice(device.id));
-      if (error instanceof TypeError)
+      if (isConnectionError(error))
         dispatch(setDeviceServerStatus(device.id, false));
     }
   };
@@ -195,21 +231,53 @@ export function postResource(
 ): ThunkAction {
   return async dispatch => {
     dispatch(requestResource(resource));
-    const response = await API.post(
-      device.server,
-      device.usr,
-      device.dev,
-      resource,
-      value,
-      device.jwt
-    );
-    const json = await response.json();
-    return dispatch(
-      receiveResource(resource, Object.assign({}, { in: value }, json))
-    );
+    try {
+      const response = await API.post(
+        device.server,
+        device.usr,
+        device.dev,
+        resource,
+        value,
+        device.jwt
+      );
+      handleResponseStatus(device, response.status, dispatch);
+      if (!response.ok) throw new AppError(ErrorCode.HTTP, response.status);
+      // Some resources reply with an empty body.
+      let json = {};
+      try {
+        json = await response.json();
+      } catch (e) {
+        // Ignore: keep the empty object.
+      }
+      return dispatch(
+        receiveResource(resource, Object.assign({}, { in: value }, json))
+      );
+    } catch (error) {
+      if (isConnectionError(error))
+        dispatch(setDeviceServerStatus(device.id, false));
+      showError(dispatch, t("resource.postFailed", { resource }));
+      // Re-fetch so the UI shows the device's real state again.
+      return dispatch(getResourceFromApi(device, resource));
+    }
   };
 }
 
 export function runResource(device: Device, resource: string): ThunkAction {
-  return API.run(device.server, device.usr, device.dev, resource, device.jwt);
+  return async dispatch => {
+    try {
+      const response = await API.run(
+        device.server,
+        device.usr,
+        device.dev,
+        resource,
+        device.jwt
+      );
+      handleResponseStatus(device, response.status, dispatch);
+      if (!response.ok) throw new AppError(ErrorCode.HTTP, response.status);
+    } catch (error) {
+      if (isConnectionError(error))
+        dispatch(setDeviceServerStatus(device.id, false));
+      showError(dispatch, t("resource.runFailed", { resource }));
+    }
+  };
 }

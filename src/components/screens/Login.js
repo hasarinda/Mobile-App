@@ -1,6 +1,8 @@
 //@flow
 
 import { connect } from "react-redux";
+import { buttonA11y } from "../../utils/a11y";
+import { t } from "../../i18n";
 import {
   ActivityIndicator,
   Image,
@@ -21,11 +23,12 @@ import {
 import { Kohana } from "react-native-textinput-effects";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { BORDER_RADIUS, MARGIN, PADDING } from "../../constants/ThingerStyles";
-import { setPassword, setUser } from "../../actions/login";
+import { setPassword, setServer, setUser } from "../../actions/login";
+import { isSecureServer } from "../../utils/url";
 import H2Text from "../texts/H2";
 import { loginFromApi } from "../../actions/fetch";
 import type { LoginAction } from "../../actions/login";
-import { ToastActionsCreators } from "react-native-redux-toast";
+import { notifyError } from "../../actions/notify";
 
 type Props = {
   username: string,
@@ -67,7 +70,8 @@ class LoginScreen extends React.Component<Props> {
               marginHorizontal: MARGIN * 1.5,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Username"}
+            label={t("login.username")}
+            accessibilityLabel={t("login.username")}
             iconClass={Icon}
             iconName={"person"}
             iconColor={DARK_BLUE}
@@ -85,7 +89,8 @@ class LoginScreen extends React.Component<Props> {
               marginVertical: 4,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Password"}
+            label={t("login.password")}
+            accessibilityLabel={t("login.password")}
             iconClass={Icon}
             iconName={"lock"}
             iconColor={DARK_BLUE}
@@ -102,7 +107,8 @@ class LoginScreen extends React.Component<Props> {
               marginHorizontal: MARGIN * 1.5,
               borderRadius: BORDER_RADIUS
             }}
-            label={"Server"}
+            label={t("login.server")}
+            accessibilityLabel={t("login.server")}
             iconClass={Icon}
             iconName={"http"}
             iconColor={DARK_BLUE}
@@ -114,6 +120,7 @@ class LoginScreen extends React.Component<Props> {
             onChangeText={this.props.onSetServer}
           />
           <TouchableOpacity
+            {...buttonA11y(t("login.submit"))}
             onPress={() => {
               Keyboard.dismiss();
               this.props.onLogin(
@@ -135,7 +142,7 @@ class LoginScreen extends React.Component<Props> {
             {this.props.isFetching ? (
               <ActivityIndicator size="small" color="#000000" />
             ) : (
-              <H2Text>Login</H2Text>
+              <H2Text>{t("login.submit")}</H2Text>
             )}
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -158,14 +165,21 @@ const mapDispatchToProps = dispatch => {
     onQRScannerPress: () => dispatch(navigate("Scanner")),
     onSetUser: user => dispatch(setUser(user)),
     onSetPassword: password => dispatch(setPassword(password)),
-    onSetServer: user => dispatch(setUser(user)),
+    onSetServer: server => dispatch(setServer(server)),
     onLogin: async (user, password, server) => {
+      if (!isSecureServer(server)) {
+        return dispatch(notifyError(t("login.insecureServer")));
+      }
       const response: LoginAction = await dispatch(
         loginFromApi(server, user, password)
       );
-      if (response.type === "RECEIVE_SESSION_FAILURE")
+      if (response && response.type === "RECEIVE_SESSION_FAILURE")
         dispatch(
-          ToastActionsCreators.displayError("Wrong email or password", 1000)
+          notifyError(
+            response.reason === "network"
+              ? t("error.cannotConnect", { server })
+              : t("login.wrongCredentials")
+          )
         );
     }
   };

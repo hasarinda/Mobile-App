@@ -1,6 +1,7 @@
 //@flow
 
 import React from "react";
+import { t } from "../i18n";
 import { FONT_SIZE_P, MARGIN } from "../constants/ThingerStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { View, Text, StyleSheet } from "react-native";
@@ -15,6 +16,7 @@ type Props = {
 
 export default class ErrorMessage extends React.Component<Props> {
   render() {
+    const { onPressButton } = this.props;
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         {this.props.icon && (
@@ -25,11 +27,11 @@ export default class ErrorMessage extends React.Component<Props> {
           />
         )}
         <Text style={styles.message}>{this.props.message}</Text>
-        {this.props.onPressButton && (
+        {onPressButton && (
           <RoundedButton
             color={DARK_BLUE}
-            text="Reload"
-            onPress={this.props.onPressButton}
+            text={t("action.reload")}
+            onPress={onPressButton}
           />
         )}
       </View>

@@ -1,3 +1,5 @@
+//@flow
+
 export const PADDING = 15;
 export const SEPARATOR_PADDING = 7;
 export const BORDER_RADIUS = 5;

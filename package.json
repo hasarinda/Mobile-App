@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint src index.js",
+    "format": "prettier --write \"src/**/*.js\"",
+    "flow": "flow check"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -19,6 +22,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.5.0",
     "react-native-qrcode-svg": "^5.0.6",
     "react-native-redux-toast": "^1.0.3",
+    "react-native-sensitive-info": "5.2.4",
     "react-native-svg": "6.2.2",
     "react-native-textinput-effects": "^0.4.2",
     "react-native-vector-icons": "^4.5.0",
@@ -27,18 +31,32 @@
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
     "redux-persist": "^5.9.1",
+    "redux-persist-sensitive-storage": "1.0.0",
     "redux-thunk": "^2.2.0",
     "victory-native": "^0.17.1"
   },
   "devDependencies": {
+    "babel-eslint": "8.2.6",
     "babel-jest": "22.4.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react-native": "4.0.0",
+    "eslint": "4.19.1",
+    "eslint-plugin-flowtype": "2.50.3",
+    "eslint-plugin-react": "7.11.1",
     "flow-bin": "^0.65.0",
     "jest": "22.4.2",
+    "prettier": "1.19.1",
     "react-test-renderer": "^16.3.0-alpha.1"
   },
   "jest": {
-    "preset": "react-native"
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/android/",
+      "/ios/"
+    ],
+    "moduleNameMapper": {
+      "^react-native$": "<rootDir>/jest/react-native.js"
+    }
   }
 }

@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet
 } from "react-native";
+import { buttonA11y } from "../../utils/a11y";
 import React from "react";
 import PText from "../texts/P";
 
@@ -25,6 +26,7 @@ export default class CardButton extends React.Component<Props> {
         style={[styles.container, { backgroundColor: color }]}
         onPress={onClick}
         activeOpacity={0.6}
+        {...buttonA11y(text)}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#000000" />

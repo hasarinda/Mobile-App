@@ -5,6 +5,7 @@ import {
   StackNavigator,
   TabNavigator
 } from "react-navigation";
+import { t } from "../../i18n";
 import { connect } from "react-redux";
 import React from "react";
 import Devices from "../screens/Devices";
@@ -28,7 +29,7 @@ const MainRoutes = TabNavigator(
     UserDevices: {
       screen: UserDevices,
       navigationOptions: {
-        title: "User",
+        title: t("tabs.user"),
         tabBarIcon: ({ tintColor }) => (
           <Icon name="person" size={22} style={{ color: tintColor }} />
         )
@@ -37,7 +38,7 @@ const MainRoutes = TabNavigator(
     ScannedDevices: {
       screen: Devices,
       navigationOptions: {
-        title: "Scanned",
+        title: t("tabs.scanned"),
         tabBarIcon: ({ tintColor }) => (
           <Icon name="devices-other" size={22} style={{ color: tintColor }} />
         )

@@ -21,7 +21,8 @@ type RECEIVE_SESSION = {
   refreshToken: string
 };
 type RECEIVE_SESSION_FAILURE = {
-  type: "RECEIVE_SESSION_FAILURE"
+  type: "RECEIVE_SESSION_FAILURE",
+  reason: "credentials" | "network"
 };
 type REQUEST_DEVICES = {
   type: "LOGIN_REQUEST_DEVICES"
@@ -67,8 +68,10 @@ export function receiveSession(
   return { type: "RECEIVE_SESSION", accessToken, refreshToken };
 }
 
-export function receiveSessionFailure(): RECEIVE_SESSION_FAILURE {
-  return { type: "RECEIVE_SESSION_FAILURE" };
+export function receiveSessionFailure(
+  reason: "credentials" | "network" = "credentials"
+): RECEIVE_SESSION_FAILURE {
+  return { type: "RECEIVE_SESSION_FAILURE", reason };
 }
 
 export function requestDevices(): REQUEST_DEVICES {
