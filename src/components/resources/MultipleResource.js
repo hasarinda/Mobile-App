@@ -49,9 +49,10 @@ class MultipleResourceView extends React.Component<Props, State> {
 
   handleOnPostClick() {
     const { resource, data, onPostClick } = this.props;
-    if (data.in) {
-      const inputs = Object.assign({}, data.in, this.state.in);
-      const castedData = castInputData(inputs, data.in);
+    const dataIn = data.in;
+    if (dataIn) {
+      const inputs = Object.assign({}, dataIn, this.state.in);
+      const castedData = castInputData(inputs, dataIn);
       this.setState({ in: this.state.in, posted: true });
       onPostClick(resource, castedData);
     }

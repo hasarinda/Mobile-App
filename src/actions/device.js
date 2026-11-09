@@ -1,8 +1,8 @@
 //@flow
 
-import type { Device } from "../types/Device";
+import type { DeviceMap } from "../types/Device";
 
-type ADD = { type: "DEVICE_ADD", device: Device, isUserDevice: boolean };
+type ADD = { type: "DEVICE_ADD", device: DeviceMap, isUserDevice: boolean };
 type REMOVE = { type: "DEVICE_REMOVE", device: string };
 type SELECT = { type: "DEVICE_SELECT", device: string };
 type SET_STATUS = {
@@ -43,7 +43,7 @@ export type DeviceAction =
   | REQUEST
   | RECEIVE;
 
-export function addDevice(device: Device, isUserDevice: boolean): ADD {
+export function addDevice(device: DeviceMap, isUserDevice: boolean): ADD {
   return { type: "DEVICE_ADD", device, isUserDevice };
 }
 

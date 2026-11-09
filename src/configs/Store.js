@@ -1,3 +1,5 @@
+//@flow
+
 import { AsyncStorage } from "react-native";
 import createSensitiveStorage from "redux-persist-sensitive-storage";
 import { createStore, applyMiddleware, compose } from "redux";
@@ -26,8 +28,8 @@ import vibrate from "../middlewares/vibrate";
 
 // Never write the plaintext password to disk.
 const stripPassword = createTransform(
-  inbound => Object.assign({}, inbound, { password: undefined }),
-  outbound => Object.assign({}, outbound, { password: undefined }),
+  (inbound: any) => Object.assign({}, inbound, { password: undefined }),
+  (outbound: any) => Object.assign({}, outbound, { password: undefined }),
   { whitelist: ["login"] }
 );
 
@@ -69,7 +71,9 @@ const config = {
   storage,
   migrate: migrateFromAsyncStorage,
   whitelist: ["devices", "login"],
-  transforms: [stripPassword]
+  // redux-persist 5 types createTransform() incompatibly with its own
+  // Transform type, hence the cast.
+  transforms: [(stripPassword: any)]
 };
 
 const navMiddleware = createReactNavigationReduxMiddleware(

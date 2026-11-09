@@ -19,7 +19,7 @@ import { addDevice, selectDevice } from "../../actions/device";
 import { removeAllResources } from "../../actions/resource";
 import type { Dispatch } from "../../types/Dispatch";
 import NavigationBar from "../navigation/NavigationBar";
-import type { Device } from "../../types/Device";
+import type { Device, DeviceMap } from "../../types/Device";
 import { GoogleAnalyticsTracker } from "react-native-google-analytics-bridge";
 import ID from "../../constants/GoogleAnalytics";
 import H1Text from "../texts/H1";
@@ -35,7 +35,7 @@ type Props = {
   devices: Array<Device>,
   onDeviceClick: (device: Device) => Dispatch,
   onQRScannerPress: () => Dispatch,
-  onAddDevice: (device: Device) => Dispatch,
+  onAddDevice: (device: DeviceMap) => Dispatch,
   onSettingsPress: () => Dispatch,
   isUserDevices: boolean,
   isFetching: boolean,
@@ -217,7 +217,7 @@ const mapDispatchToProps = dispatch => {
     },
     onSettingsPress: () => dispatch(navigate("Settings")),
     onQRScannerPress: () => dispatch(navigate("Scanner")),
-    onAddDevice: (device: Device) => dispatch(addDevice(device, false)),
+    onAddDevice: (device: DeviceMap) => dispatch(addDevice(device, false)),
     displayMessage: (message: string) =>
       dispatch(ToastActionsCreators.displayInfo(message, 1000)),
     displayError: (message: string) =>

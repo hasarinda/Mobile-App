@@ -13,11 +13,11 @@ import NavigationBar from "../navigation/NavigationBar";
 import { RNCamera } from "react-native-camera";
 import { DARK_BLUE } from "../../constants/ThingerColors";
 import { ToastActionsCreators } from "react-native-redux-toast";
-import type { Device } from "../../types/Device";
+import type { DeviceMap } from "../../types/Device";
 
 type Props = {
   devices: Array<string>,
-  addDevice: (device: Device) => Dispatch,
+  addDevice: (device: DeviceMap) => Dispatch,
   displayError: (message: string) => Dispatch
 };
 
@@ -101,7 +101,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addDevice: (device: Device) => {
+    addDevice: (device: DeviceMap) => {
       dispatch(addDevice(device, false));
       dispatch(ToastActionsCreators.displayInfo("Added!", 1000));
       return dispatch(goBack());

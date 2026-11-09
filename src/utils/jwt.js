@@ -1,8 +1,9 @@
 //@flow
 
 import base64 from "base-64";
+import type { DeviceMap } from "../types/Device";
 
-export function parseJWT(jwt: string) {
+export function parseJWT(jwt: string): DeviceMap {
   try {
     const data: string = jwt.split(".")[1];
     const payload = base64.decode(data);

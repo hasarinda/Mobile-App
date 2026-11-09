@@ -19,6 +19,12 @@
 ; Ignore metro
 .*/node_modules/metro/.*
 
+[untyped]
+; These libraries ship Flow annotations that don't type-check; treat them
+; as untyped instead of failing the build.
+.*/node_modules/react-native-camera/.*
+.*/node_modules/react-native-keyboard-aware-scroll-view/.*
+
 [include]
 
 [libs]

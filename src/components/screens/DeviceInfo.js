@@ -96,7 +96,9 @@ class DeviceInfo extends React.Component<Props, State> {
                   <OutputItem
                     key="iat"
                     name={"Token creation date"}
-                    value={timestampToString(device.iat)}
+                    value={
+                      device.iat ? timestampToString(device.iat) : "Unknown"
+                    }
                   />,
                   <OutputItem
                     key="exp"
