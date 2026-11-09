@@ -64,6 +64,7 @@ export function refreshTokenFromApi(
   server: string,
   refreshToken: string
 ): ThunkAction {
+  // Resolves to the new tokens, or null if the session could not be refreshed.
   return async dispatch => {
     try {
       dispatch(requestSession());
@@ -71,12 +72,16 @@ export function refreshTokenFromApi(
       if (response.status === 200) {
         const json = await response.json();
         dispatch(receiveSession(json.access_token, json.refresh_token));
-      } else {
-        dispatch(logOut());
+        return {
+          accessToken: json.access_token,
+          refreshToken: json.refresh_token
+        };
       }
+      dispatch(logOut());
     } catch (error) {
-      console.error(error);
+      dispatch(receiveSessionFailure());
     }
+    return null;
   };
 }
 
@@ -84,50 +89,69 @@ export function getDevicesFromApi(
   server: string,
   username: string,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  isRetry: boolean = false
 ): ThunkAction {
   return async dispatch => {
     dispatch(requestDevices());
-    const response = await API.getUserDeviceList(server, username, accessToken);
-    switch (response.status) {
-      case 200:
-        const devices = await response.json();
-        const promises = devices.map(device =>
-          dispatch(
-            addDevice(
-              {
-                [device.device]: {
-                  jwt: accessToken,
-                  id: device.device,
-                  dev: device.device,
-                  usr: username,
-                  desc: device.description,
-                  isFetching: false,
-                  isOnline: device.connection === "active",
-                  isAuthorized: true,
-                  server,
-                  hasServerConnection: true
-                }
-              },
-              true
+    try {
+      const response = await API.getUserDeviceList(
+        server,
+        username,
+        accessToken
+      );
+      switch (response.status) {
+        case 200:
+          const devices = await response.json();
+          const promises = devices.map(device =>
+            dispatch(
+              addDevice(
+                {
+                  [device.device]: {
+                    jwt: accessToken,
+                    id: device.device,
+                    dev: device.device,
+                    usr: username,
+                    desc: device.description,
+                    isFetching: false,
+                    isOnline: device.connection === "active",
+                    isAuthorized: true,
+                    server,
+                    hasServerConnection: true
+                  }
+                },
+                true
+              )
             )
-          )
-        );
-        await Promise.all(promises);
-        return dispatch(receiveDevices());
-      case 401:
-        const refresh = await dispatch(
-          refreshTokenFromApi(server, refreshToken)
-        );
-        return dispatch(
-          getDevicesFromApi(
-            server,
-            username,
-            refresh.accessToken,
-            refresh.refreshToken
-          )
-        );
+          );
+          await Promise.all(promises);
+          break;
+        case 401:
+          // Refresh once; if that fails the user has already been logged out.
+          if (!isRetry) {
+            const tokens = await dispatch(
+              refreshTokenFromApi(server, refreshToken)
+            );
+            if (tokens) {
+              return dispatch(
+                getDevicesFromApi(
+                  server,
+                  username,
+                  tokens.accessToken,
+                  tokens.refreshToken,
+                  true
+                )
+              );
+            }
+          } else {
+            dispatch(logOut());
+          }
+          break;
+      }
+    } catch (error) {
+      // Network error: fall through so the loading state is cleared.
     }
+    return dispatch(receiveDevices());
   };
 }
 
