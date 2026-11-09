@@ -75,23 +75,31 @@ class DeviceInfo extends React.Component<Props, State> {
               ) : (
                 [
                   <TextInputItem
+                    key="alias"
                     name={"Alias"}
                     value={device.name ? device.name : ""}
                     placeholder={device.dev}
                     onChangeText={text => changeName(device.id, text)}
                   />,
                   <TextInputItem
+                    key="server"
                     name={"Server"}
                     value={this.state.server}
                     placeholder={THINGER_SERVER}
                     onChangeText={this.handleOnChangeText}
                   />,
-                  <EnterItem name={"Token QR"} onPress={() => onShowQR()} />,
+                  <EnterItem
+                    key="qr"
+                    name={"Token QR"}
+                    onPress={() => onShowQR()}
+                  />,
                   <OutputItem
+                    key="iat"
                     name={"Token creation date"}
                     value={timestampToString(device.iat)}
                   />,
                   <OutputItem
+                    key="exp"
                     name={"Token expiration date"}
                     value={device.exp ? timestampToString(device.exp) : "Never"}
                   />

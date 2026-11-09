@@ -1,6 +1,6 @@
 import { Vibration } from "react-native";
 
-export default (vibrate = () => next => action => {
+const vibrate = () => next => action => {
   if (
     action.type !== "@@TOAST/DISPLAY_ERROR" &&
     action.type !== "@@TOAST/DISPLAY_INFO" &&
@@ -11,4 +11,6 @@ export default (vibrate = () => next => action => {
 
   Vibration.vibrate();
   return next(action);
-});
+};
+
+export default vibrate;

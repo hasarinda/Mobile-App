@@ -224,6 +224,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   });
 };
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(
-  ResourcesScreen
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps
+)(ResourcesScreen);

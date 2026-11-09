@@ -1,3 +1,5 @@
+//@flow
+
 import base64 from "base-64";
 
 export function parseJWT(jwt: string) {

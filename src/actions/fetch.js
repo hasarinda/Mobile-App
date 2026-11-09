@@ -33,8 +33,7 @@ function showError(dispatch, message: string) {
 // the server can't be reached.
 function isConnectionError(error) {
   return (
-    error instanceof TypeError ||
-    (error && error.message === "INSECURE_SERVER")
+    error instanceof TypeError || (error && error.message === "INSECURE_SERVER")
   );
 }
 
@@ -253,7 +252,9 @@ export function postResource(
       let json = {};
       try {
         json = await response.json();
-      } catch (e) {}
+      } catch (e) {
+        // Ignore: keep the empty object.
+      }
       return dispatch(
         receiveResource(resource, Object.assign({}, { in: value }, json))
       );

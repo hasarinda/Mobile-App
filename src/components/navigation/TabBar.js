@@ -28,18 +28,26 @@ export default class TabBar extends React.Component<Props> {
       <View style={styles.container}>
         {tabs.map(({ icon, title, onPress, active }) => {
           return (
-            <TouchableOpacity onPress={onPress} style={styles.button}>
+            <TouchableOpacity
+              key={title}
+              onPress={onPress}
+              style={styles.button}
+            >
               {active
                 ? [
                     <Icon
+                      key="icon"
                       name={icon}
                       size={22}
                       style={{ color: COLOR_TAB_BAR_ACTIVE, paddingBottom: 3 }}
                     />,
-                    <Text style={{ color: COLOR_TAB_BAR_ACTIVE }}>{title}</Text>
+                    <Text key="title" style={{ color: COLOR_TAB_BAR_ACTIVE }}>
+                      {title}
+                    </Text>
                   ]
                 : [
                     <Icon
+                      key="icon"
                       name={icon}
                       size={20}
                       style={{
@@ -47,7 +55,7 @@ export default class TabBar extends React.Component<Props> {
                         paddingBottom: 3
                       }}
                     />,
-                    <Text style={{ color: COLOR_TAB_BAR_INACTIVE }}>
+                    <Text key="title" style={{ color: COLOR_TAB_BAR_INACTIVE }}>
                       {title}
                     </Text>
                   ]}

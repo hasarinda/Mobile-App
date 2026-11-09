@@ -15,7 +15,7 @@ function getCurrentRouteName(navigationState) {
   return route.routeName;
 }
 
-export default (screenTracking = ({ getState }) => next => action => {
+const screenTracking = ({ getState }) => next => action => {
   if (
     action.type !== NavigationActions.NAVIGATE &&
     action.type !== NavigationActions.BACK
@@ -30,4 +30,6 @@ export default (screenTracking = ({ getState }) => next => action => {
     tracker.trackScreenView(nextScreen);
   }
   return result;
-});
+};
+
+export default screenTracking;
