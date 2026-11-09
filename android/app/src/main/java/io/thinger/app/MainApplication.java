@@ -12,6 +12,7 @@ import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
 import com.horcrux.svg.SvgPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
+import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -36,7 +37,8 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage(),
             new SvgPackage(),
             new GoogleAnalyticsBridgePackage(),
-            new RNCameraPackage()
+            new RNCameraPackage(),
+            new RNSensitiveInfoPackage()
       );
     }
 
