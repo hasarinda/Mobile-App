@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.thinger.app">
+
+    <!-- Needed only for the React Native dev menu / red box overlay. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+</manifest>
