@@ -126,7 +126,12 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // Metro bundler is served over http in development.
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
+        }
         release {
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release

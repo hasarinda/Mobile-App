@@ -21,7 +21,8 @@ import {
 import { Kohana } from "react-native-textinput-effects";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { BORDER_RADIUS, MARGIN, PADDING } from "../../constants/ThingerStyles";
-import { setPassword, setUser } from "../../actions/login";
+import { setPassword, setServer, setUser } from "../../actions/login";
+import { isSecureServer } from "../../utils/url";
 import H2Text from "../texts/H2";
 import { loginFromApi } from "../../actions/fetch";
 import type { LoginAction } from "../../actions/login";
@@ -158,8 +159,13 @@ const mapDispatchToProps = dispatch => {
     onQRScannerPress: () => dispatch(navigate("Scanner")),
     onSetUser: user => dispatch(setUser(user)),
     onSetPassword: password => dispatch(setPassword(password)),
-    onSetServer: user => dispatch(setUser(user)),
+    onSetServer: server => dispatch(setServer(server)),
     onLogin: async (user, password, server) => {
+      if (!isSecureServer(server)) {
+        return dispatch(
+          ToastActionsCreators.displayError("Server must use https://", 2000)
+        );
+      }
       const response: LoginAction = await dispatch(
         loginFromApi(server, user, password)
       );
