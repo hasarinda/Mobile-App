@@ -8,9 +8,40 @@ Mobile App source code for the [Thinger.io](https://thinger.io) Internet of Thin
 
 ## Overview
 
-The current version of the APP does not require any kind of login to interact with your IoT devices. Simply scan your device token as a QR code and your phone will be able to interact with your device for reading sensor values, changing led or relays states, and so on.
-It is available for Android and iOS devices.
+The app lets you interact with your Thinger.io IoT devices: read sensor values, change LED or relay states, and plot resources in real time. It is available for Android and iOS.
 
+There are two ways to add devices:
+
+- **Sign in** with your Thinger.io account (or your own server) to list all the devices of the account.
+- **Scan a device token** as a QR code (or paste it from the clipboard) to access a single device without signing in.
+
+Only HTTPS servers are accepted (`http://localhost` is allowed for development). Session tokens and device tokens are stored in the iOS Keychain / Android private storage; passwords are never stored.
+
+## Development
+
+Requirements: Node.js, Yarn, the [React Native CLI](https://facebook.github.io/react-native/docs/getting-started.html) (React Native 0.54), Xcode for iOS and Android Studio / Android SDK for Android.
+
+```bash
+yarn install
+react-native link
+```
+
+Run the app:
+
+```bash
+yarn start            # Metro bundler
+react-native run-ios
+react-native run-android
+```
+
+Checks:
+
+```bash
+yarn lint
+yarn test
+```
+
+Android release builds are signed with the `THINGER_APP_RELEASE_*` properties defined in your `~/.gradle/gradle.properties`.
 
 ## Contributors
 
